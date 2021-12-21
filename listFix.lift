@@ -1,0 +1,50 @@
+#read --branchify=branches/* listFix.svn
+#read listFix.svn
+read --nobranch listFix.svn
+
+path rename "branches/1.5.3/(.*)" "branches/1.5.3/dev/\1"
+path rename "branches/2.0.0/(.*)" "branches/2.0.0/dev/\1"
+path rename "branches/2.1.0/(.*)" "branches/2.1.0/dev/\1"
+path rename "branches/2.2.0/(.*)" "branches/2.2.0/dev/\1"
+
+branchlift master branches/1.5.3
+branchlift master branches/2.0.0
+branchlift master branches/2.1.0
+branchlift master branches/2.2.0
+
+# Check for and report glitches such as timestamp collisions,
+# ill-formed committer/author IDs, multiple roots, etc.
+lint
+
+# Map Subversion usernames to Git-style user IDs.  In a real
+# conversion you'd probably have a lot more of these and you'd
+# probably read them in from a separate file, not a heredoc.
+authors read <<EOF
+firewyre = firewyre <firewyre@users.sourceforge.net>
+John Peterson <john.s.peterson@live.com> = John Peterson <john.s.peterson@live.com>
+user22735 = user22735 <user22735@users.sourceforge.net>
+EOF
+
+# Massage comments into Git-like form (with a topic sentence and a
+# spacer line after it if there is following running text). Only
+# done when the first line is syntactically recognizable as a whole
+# sentence.
+gitify
+
+references lift
+
+# Exclude releases
+1..$ expunge /releases/.*/
+
+# Process GNU Changelogs to get better attributions for changesets.
+# When a commit was derived from a patch and checked in by someone
+# other than its author this can often correct the commit attribution.
+changelogs
+
+# We want to write a Git repository
+prefer git
+
+#branch rename refs/heads/unbranched refs/heads/main
+
+# Do it
+rebuild listFix.git

@@ -1,0 +1,3 @@
+firewyre = firewyre <firewyre@users.sourceforge.net>
+John Peterson <john.s.peterson@live.com> = John Peterson <john.s.peterson@live.com>
+user22735 = user22735 <user22735@users.sourceforge.net>
